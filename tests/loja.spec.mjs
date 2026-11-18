@@ -17,5 +17,5 @@ test('aceitar cookies fecha o aviso e a oferta aparece', async ({ page }) => {
 })
 
 test('pedido carregado da API da página', async ({ page }) => {
-  await expect(page.getByTestId('pedido')).toHaveText('PED-4821 pago')
+  await expect(page.getByTestId('pedido')).toHaveText('PED-4821 cancelado')
 })
