@@ -1,0 +1,23 @@
+name: AIUBY Test Automation
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Alvo com posse verificada (origem ou id)
+        required: true
+        default: https://cortex.aiuby.com
+permissions:
+  contents: read
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - id: aiuby
+        uses: aiuby-ai/aiuby-tests@main
+        with:
+          api-key: ${{ secrets.AIUBY_API_KEY }}
+          target: ${{ inputs.target }}
+          timeout-minutes: '15'
+      - run: echo "Execução ${{ steps.aiuby.outputs.run-id }} terminou com ${{ steps.aiuby.outputs.gate }}"
+        if: always()

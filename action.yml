@@ -1,0 +1,67 @@
+name: AIUBY Test Automation
+description: Roda a suíte Playwright do repositório no executor gerenciado da AIUBY e usa o resultado como portão do workflow.
+author: AIUBY
+branding:
+  icon: check-circle
+  color: purple
+inputs:
+  api-key:
+    description: Chave da API v1 da AIUBY com o escopo tests:run (guarde como secret do repositório).
+    required: true
+  target:
+    description: Nome ou id do alvo com posse verificada no AIUBY Test Automation.
+    required: true
+  repo:
+    description: Repositório owner/nome ligado ao Cortex (padrão, o repositório do workflow).
+    required: false
+    default: ${{ github.repository }}
+  ref:
+    description: Branch, tag ou commit (padrão, o commit do workflow).
+    required: false
+    default: ${{ github.sha }}
+  browsers:
+    description: Navegadores separados por vírgula (chromium, firefox, webkit).
+    required: false
+    default: chromium
+  shards:
+    description: Quantidade de shards paralelos.
+    required: false
+    default: '1'
+  wait:
+    description: Espera o resultado e falha o job se a suíte falhar (true) ou só dispara (false).
+    required: false
+    default: 'true'
+  timeout-minutes:
+    description: Tempo máximo de espera pelo resultado.
+    required: false
+    default: '30'
+  base-url:
+    description: Endereço da AIUBY.
+    required: false
+    default: https://aiuby.com
+outputs:
+  run-id:
+    description: Id da execução na AIUBY.
+    value: ${{ steps.run.outputs.run-id }}
+  gate:
+    description: passed, failed ou pending.
+    value: ${{ steps.run.outputs.gate }}
+  url:
+    description: Link da execução na AIUBY.
+    value: ${{ steps.run.outputs.url }}
+runs:
+  using: composite
+  steps:
+    - id: run
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/run.mjs"
+      env:
+        AIUBY_API_KEY: ${{ inputs.api-key }}
+        AIUBY_TARGET: ${{ inputs.target }}
+        AIUBY_REPO: ${{ inputs.repo }}
+        AIUBY_REF: ${{ inputs.ref }}
+        AIUBY_BROWSERS: ${{ inputs.browsers }}
+        AIUBY_SHARDS: ${{ inputs.shards }}
+        AIUBY_WAIT: ${{ inputs.wait }}
+        AIUBY_TIMEOUT_MINUTES: ${{ inputs.timeout-minutes }}
+        AIUBY_BASE_URL: ${{ inputs.base-url }}
